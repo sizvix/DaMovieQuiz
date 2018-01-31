@@ -34,3 +34,9 @@ html,body {
   display: inline-block;
   margin: 0 1em;
 }
+.score_pos {
+	color: #0F0
+}
+.score_neg {
+	color: #F00
+}
