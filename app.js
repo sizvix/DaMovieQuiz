@@ -42,6 +42,7 @@ class Main extends React.Component {
 		this.allFilms = [] ;															// All the first 100 films
 		this.randFilms = {} ;														// Only some films ( random )
 		this.listActors = [] ;
+		this.curr_num = -1 ;															// -1 because we haven't start yet
 		this.getPgFilms(5);															// get films (5pages=>100films) , and chain select films and actors of those films
 		this.state = { quests : [] } ;											// create questions
 	}
@@ -77,6 +78,7 @@ class Main extends React.Component {
 	genQuests(){
 		for(var i=0; i<5 ;i++)														// 5 questions and we generate others one by one
 			this.append_quest( Object.keys(this.randFilms)[i],i ); 
+		this.next_film();
 	}
 	append_quest( id_film,num ){													// we get a num to identify the questions
 		console.log('quest id:'+id_film+' num :'+num);
@@ -95,15 +97,25 @@ class Main extends React.Component {
 			act = this.randFilms[choose].cast[ Math.floor(Math.random()*this.randFilms[choose].cast.length) ];	// one of the actors of this film
 		}
 
-		this.setState({quests:[...this.state.quests,{num , val 
+		this.setState({quests:[...this.state.quests,{num , val , display:{display:'none'}
 				, film:{src: "https://image.tmdb.org/t/p/w300/"+this.randFilms[id_film].poster_path, title:this.randFilms[id_film].title}
 				, actor: {src: "https://image.tmdb.org/t/p/w300/"+ act.profile_path , name:act.name}
 			} ]});																			// and push the question in the list of questions
 	}
+	next_film(){
+		let quests = this.state.quests;
+		if(this.curr_num>-1)
+			quests[this.curr_num].display={display:'none'};					// we hide and show the last and next question
+		quests[this.curr_num+1].display={display:''};
+		this.setState( { quests } );
+		this.curr_num++;
+
+		// we load an other question
+	}
 	
 	render(){
 		return <div className="main_part" >{this.state.quests.map(quest=>
-			<div className="one_quest">
+			<div style={quest.display} className="one_quest">
 				<img src={quest.film.src} />
 				<img src={quest.actor.src} />
 				<div>{quest.film.title}</div>
@@ -116,19 +128,27 @@ class Main extends React.Component {
 class Resp extends React.Component {
 	render() {
 		return <div className="resp_part" >
-				<button className="btn_oui" > OUI </button>
-				<button className="btn_non" > NON </button>
+				<button className="btn_oui" onClick={this.props.click_oui} > OUI </button>
+				<button className="btn_non" onClick={this.props.click_non} > NON </button>
 			</div> ;
 	}
 }
 
 class App extends React.Component {
+	click_oui(){
+		console.log('OUI');
+		this.main.next_film();
+	}
+	click_non(){
+		console.log('NON');
+		this.main.next_film();
+	}
 	render(){
 		return <div className="app_base" >
 				<Timer /><Score />
 				<Head />
-				<Main />
-				<Resp />
+				<Main ref={e=>this.main=e} />
+				<Resp click_oui={this.click_oui.bind(this)} click_non={this.click_non.bind(this)} />
 			</div> ;
 	}
 }
