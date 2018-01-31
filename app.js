@@ -112,6 +112,9 @@ class Main extends React.Component {
 
 		// we load an other question
 	}
+	current_quest_resp(val){														// check the response
+		return this.state.quests[this.curr_num].val==val ;
+	}
 	
 	render(){
 		return <div className="main_part" >{this.state.quests.map(quest=>
@@ -137,15 +140,25 @@ class Resp extends React.Component {
 class App extends React.Component {
 	click_oui(){
 		console.log('OUI');
+		if(this.main.current_quest_resp(true))
+			this.score.up_OK();
+		else
+			this.score.up_KO();
+
 		this.main.next_film();
 	}
 	click_non(){
 		console.log('NON');
+		if(this.main.current_quest_resp(false))
+			this.score.up_OK();
+		else
+			this.score.up_KO();
+
 		this.main.next_film();
 	}
 	render(){
 		return <div className="app_base" >
-				<Timer /><Score />
+				<Timer /><Score ref={e=>this.score=e} />
 				<Head />
 				<Main ref={e=>this.main=e} />
 				<Resp click_oui={this.click_oui.bind(this)} click_non={this.click_non.bind(this)} />
