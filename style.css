@@ -1,0 +1,36 @@
+html,body {
+	margin:0
+}
+.main_part {
+  text-align: center;
+}
+.one_quest>img {
+  vertical-align: middle;
+}
+.one_quest>div {
+  display: inline-block;
+  width: 50%;
+  margin: 1em 0;
+}
+.resp_part {
+  text-align: center;
+}
+.resp_part>button {
+  margin: 1em;
+}
+.timer {
+  float: left;
+  margin: 1em;
+}
+.score {
+  float: right;
+  margin: 1em;
+}
+.head_part {
+  clear: both;
+  text-align: center;
+}
+.score>div {
+  display: inline-block;
+  margin: 0 1em;
+}
