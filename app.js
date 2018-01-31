@@ -56,7 +56,15 @@ class Main extends React.Component {
 		Promise.all(all).then((arr)=>  {
 			this.allFilms = arr.reduce( (p,c) => p.concat(c) );
 			console.log(this);
+			this.selectFilms();
 		});
+	}
+	selectFilms(){
+		let orgList = this.allFilms.slice();									// copy the list of films 
+		while(Object.keys(this.randFilms).length < 20){						// and take randomly some of them ( 20 due to tmdb request per second restriction to get credits details)
+			let film = orgList.splice( Math.floor( Math.random()*orgList.length ) , 1 )[0] ;
+			this.randFilms[film.id] = film ;										// store films by id to link actors with it easily
+		}
 	}
 	
 	render(){
