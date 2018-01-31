@@ -42,10 +42,8 @@ class Main extends React.Component {
 		this.allFilms = [] ;															// All the first 100 films
 		this.randFilms = {} ;														// Only some films ( random )
 		this.listActors = [] ;
-		this.getPgFilms(5);															// we need to get films ( 5pages => 100films )
-		// select some films
-		// get the list of actors
-		// create questions
+		this.getPgFilms(5);															// get films (5pages=>100films) , and chain select films and actors of those films
+		this.state = { quests : [] } ;											// create questions
 	}
 	getPgFilms(nb){
 		let all = [];
@@ -71,9 +69,36 @@ class Main extends React.Component {
 		let all = [];
 		console.log('select actors');
 		for(var i in this.randFilms)
-			fetch("https://api.themoviedb.org/3/movie/"+this.randFilms[i].id+"/credits?"+api_key)
+			all.push( fetch("https://api.themoviedb.org/3/movie/"+this.randFilms[i].id+"/credits?"+api_key)
 			.then(data => data.json() )
-			.then(data => this.randFilms[data.id].cast = data.cast );
+			.then(data => this.randFilms[data.id].cast = data.cast ) );
+		Promise.all(all).then(() => this.genQuests() );
+	}
+	genQuests(){
+		for(var i=0; i<5 ;i++)														// 5 questions and we generate others one by one
+			this.append_quest( Object.keys(this.randFilms)[i],i ); 
+	}
+	append_quest( id_film,num ){													// we get a num to identify the questions
+		console.log('quest id:'+id_film+' num :'+num);
+		var val = Math.random()<0.5? true : false ;							// choose resp true or false
+		var act ;
+		if(val){
+			act = this.randFilms[id_film].cast[ 								// if true , we get one actor in the film
+							Math.floor(Math.random()*this.randFilms[id_film].cast.length%10)							// one of the 10 first actors to not have questions too hard
+						];
+		}else{																			// else we get an actor in another film
+			let keys = Object.keys(this.randFilms);
+			let choose ;
+			do{																			// to be sure we don't take the same film ^^U
+				choose = keys[ Math.floor(Math.random()*keys.length) ];
+			}while(choose!=id_film);
+			act = this.randFilms[choose].cast[ Math.floor(Math.random()*this.randFilms[choose].cast.length) ];	// one of the actors of this film
+		}
+
+		this.setState({quests:[...this.state.quests,{num , val 
+				, film:{src: "https://image.tmdb.org/t/p/w300/"+this.randFilms[id_film].poster_path, title: "https://image.tmdb.org/t/p/w300/"+this.randFilms[id_film].title}
+				, actor: {src: "https://image.tmdb.org/t/p/w300/"+ act.profile_path , name:"https://image.tmdb.org/t/p/w300/"+act.name}
+			} ]});																			// and push the question in the list of questions
 	}
 	
 	render(){
