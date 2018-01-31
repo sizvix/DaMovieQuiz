@@ -96,20 +96,20 @@ class Main extends React.Component {
 		}
 
 		this.setState({quests:[...this.state.quests,{num , val 
-				, film:{src: "https://image.tmdb.org/t/p/w300/"+this.randFilms[id_film].poster_path, title: "https://image.tmdb.org/t/p/w300/"+this.randFilms[id_film].title}
-				, actor: {src: "https://image.tmdb.org/t/p/w300/"+ act.profile_path , name:"https://image.tmdb.org/t/p/w300/"+act.name}
+				, film:{src: "https://image.tmdb.org/t/p/w300/"+this.randFilms[id_film].poster_path, title:this.randFilms[id_film].title}
+				, actor: {src: "https://image.tmdb.org/t/p/w300/"+ act.profile_path , name:act.name}
 			} ]});																			// and push the question in the list of questions
 	}
 	
 	render(){
-		return <div className="main_part" >
+		return <div className="main_part" >{this.state.quests.map(quest=>
 			<div className="one_quest">
-				<img src="https://image.tmdb.org/t/p/w300/6jkviwPHZPHGHRu6QhECU2mbO05.jpg" />
-				<img src="https://image.tmdb.org/t/p/w300/4CR1D9VLWZcmGgh4b6kKuY2NOel.jpg" />
-				<div>Mad Max</div>
-				<div>Tom Hardy</div>
+				<img src={quest.film.src} />
+				<img src={quest.actor.src} />
+				<div>{quest.film.title}</div>
+				<div>{quest.actor.name}</div>
 			</div>
-		</div> ;
+		)}</div> ;
 	}
 }
 
