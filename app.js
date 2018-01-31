@@ -1,3 +1,5 @@
+var api_key = 'api_key=cd0c2e17fe6cd8eae6c8cad3d0e7eec7' ;
+
 class Timer extends React.Component {
 	constructor(props){ 
 		super(props);
@@ -37,10 +39,24 @@ class Head extends React.Component {
 class Main extends React.Component {
 	constructor(props){
 		super(props);
-		// we need to get films
+		this.allFilms = [] ;															// All the first 100 films
+		this.randFilms = {} ;														// Only some films ( random )
+		this.listActors = [] ;
+		this.getPgFilms(5);															// we need to get films ( 5pages => 100films )
 		// select some films
 		// get the list of actors
 		// create questions
+	}
+	getPgFilms(nb){
+		let all = [];
+		for(var i=1; i<=nb ;i++)
+			all.push( fetch("https://api.themoviedb.org/3/discover/movie?"+api_key+"&language=fr&sort_by=popularity.desc&include_adult=false&include_video=false&page="+i) 
+			.then(data => data.json() )
+			.then(data => data.results ) );
+		Promise.all(all).then((arr)=>  {
+			this.allFilms = arr.reduce( (p,c) => p.concat(c) );
+			console.log(this);
+		});
 	}
 	
 	render(){
