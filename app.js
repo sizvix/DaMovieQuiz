@@ -3,6 +3,10 @@ class Timer extends React.Component {
 		super(props);
 		this.state = { time:60 } ;
 	}
+	start(){
+		// start decrease time
+		// callback when end of time 
+	}
 	render() {
 		return <div className="timer" >{this.state.time} seconds</div> ;
 	}
@@ -12,6 +16,12 @@ class Score extends React.Component {
 	constructor(props){ 
 		super(props);
 		this.state = { OK:0 , KO:0 } ;
+	}
+	up_OK(){																				// increase score
+		this.setState({OK: this.state.OK+1 });
+	}
+	up_KO(){																				// inscrease bad response score
+		this.setState({KO: this.state.KO+1 });
 	}
 	render() {
 		return <div className="score"><div className="score_pos" > {this.state.OK} </div> <div className="score_neg" > {this.state.KO} </div></div> ;
@@ -25,8 +35,16 @@ class Head extends React.Component {
 }
 
 class Main extends React.Component {
-render(){
-	return <div className="main_part" >
+	constructor(props){
+		super(props);
+		// we need to get films
+		// select some films
+		// get the list of actors
+		// create questions
+	}
+	
+	render(){
+		return <div className="main_part" >
 			<div className="one_quest">
 				<img src="https://image.tmdb.org/t/p/w300/6jkviwPHZPHGHRu6QhECU2mbO05.jpg" />
 				<img src="https://image.tmdb.org/t/p/w300/4CR1D9VLWZcmGgh4b6kKuY2NOel.jpg" />
