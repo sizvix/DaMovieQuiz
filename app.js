@@ -57,6 +57,7 @@ class Main extends React.Component {
 			this.allFilms = arr.reduce( (p,c) => p.concat(c) );
 			console.log(this);
 			this.selectFilms();
+			this.getActors();															// we get the list of actors from the list of films
 		});
 	}
 	selectFilms(){
@@ -65,6 +66,14 @@ class Main extends React.Component {
 			let film = orgList.splice( Math.floor( Math.random()*orgList.length ) , 1 )[0] ;
 			this.randFilms[film.id] = film ;										// store films by id to link actors with it easily
 		}
+	}
+	getActors(){																	// to load casting of the selected films
+		let all = [];
+		console.log('select actors');
+		for(var i in this.randFilms)
+			fetch("https://api.themoviedb.org/3/movie/"+this.randFilms[i].id+"/credits?"+api_key)
+			.then(data => data.json() )
+			.then(data => this.randFilms[data.id].cast = data.cast );
 	}
 	
 	render(){
