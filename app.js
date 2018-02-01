@@ -3,11 +3,16 @@ var api_key = 'api_key=cd0c2e17fe6cd8eae6c8cad3d0e7eec7' ;
 class Timer extends React.Component {
 	constructor(props){ 
 		super(props);
-		this.state = { time:60 } ;
+		this.state = { time:60 } ;													// set init time
+//		this.start();
 	}
 	start(){
-		// start decrease time
-		// callback when end of time 
+		var counter = setInterval(()=>this.setState({time:this.state.time-1}) ,1000);		// start decrease time
+		setTimeout(()=>{
+			clearInterval(counter);
+			this.setState({time:0})
+			this.props.onEnd();
+		},60000);																		// callback when end of time 
 	}
 	render() {
 		return <div className="timer" >{this.state.time} seconds</div> ;
@@ -17,7 +22,7 @@ class Timer extends React.Component {
 class Score extends React.Component {
 	constructor(props){ 
 		super(props);
-		this.state = { OK:0 , KO:0 } ;
+		this.state = { OK:0 , KO:0 } ;											// init score
 	}
 	up_OK(){																				// increase score
 		this.setState({OK: this.state.OK+1 });
@@ -84,7 +89,8 @@ class Main extends React.Component {
 		var nb_quests = this.state.quests.length ;
 		for(var i=nb_quests; i<this.curr_num+5 ;i++)							// 5 questions the first time (and we generate others one by one)
 			this.append_quest( this.randOrder[i],i ); 		// the next times, we fit to curr_num+5
-		this.next_film();
+//		this.next_film();
+		if(this.curr_num<2)		this.props.ready();
 	}
 	append_quest( id_film,num ){													// we get a num to identify the questions
 		console.log('quest id:'+id_film+' num :'+num);
@@ -150,6 +156,26 @@ class Resp extends React.Component {
 	}
 }
 
+class PrePage extends React.Component {
+	constructor(props){
+		super(props);
+		this.state = {state:'loadding'};
+	}
+	ready(){
+		this.setState({state:'ready'});
+	}
+	start(){
+		this.setState({state:'start'});
+		this.props.start();
+	}
+	render() {
+		return <div style={this.state.state!='start'?{}:{display:'none'}} className="prepage" >
+				<h1 style={this.state.state=='loadding'?{}:{display:'none'}} >Application en chargement</h1>
+				<h1 style={this.state.state=='ready'?{}:{display:'none'}} >Prêt ? <button onClick={this.start.bind(this)} >Jouer !</button></h1>
+			</div> ;
+	}
+}
+
 class App extends React.Component {
 	click_oui(){
 		console.log('OUI');
@@ -169,11 +195,22 @@ class App extends React.Component {
 
 		this.main.next_film();
 	}
+	onEnd(){
+		alert('fini!');
+	}
+	ready(){
+		this.prepage.ready();
+	}
+	start(){
+		this.main.next_film();
+		this.timer.start();
+	}
 	render(){
 		return <div className="app_base" >
-				<Timer /><Score ref={e=>this.score=e} />
+				<PrePage start={this.start.bind(this)} ref={e=>this.prepage=e}/>				
+				<Timer ref={e=>this.timer=e} onEnd={this.onEnd.bind(this)} /><Score ref={e=>this.score=e} />
 				<Head />
-				<Main ref={e=>this.main=e} />
+				<Main ref={e=>this.main=e} ready={this.ready.bind(this)} />
 				<Resp click_oui={this.click_oui.bind(this)} click_non={this.click_non.bind(this)} />
 			</div> ;
 	}
