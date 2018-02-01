@@ -90,6 +90,7 @@ class Main extends React.Component {
 	}
 	genQuests(){
 		var nb_quests = this.state.quests.length ;
+		console.log("nb_quests:"+nb_quests);
 		for(var i=nb_quests; i<this.curr_num+5 ;i++)							// 5 questions the first time (and we generate others one by one)
 			this.append_quest( this.randOrder[i],i ); 		// the next times, we fit to curr_num+5
 //		this.next_film();
@@ -127,12 +128,13 @@ class Main extends React.Component {
 			quests[this.curr_num].display={display:'none'};					// we hide and show the last and next question
 		quests[this.curr_num+1].display={display:''};
 		this.setState( { quests } );
-		this.curr_num++;
 
 		if( this.randOrder[this.curr_num+5]!=undefined )
 			this.append_quest(this.randOrder[this.curr_num+5],this.curr_num+5 ) ;		// we load an other question
 		else
 			this.loadMore();															// when there is no other film loaded,
+
+		this.curr_num++;
 	}
 	current_quest_resp(val){														// check the response
 		return this.state.quests[this.curr_num].val==val ;
