@@ -141,8 +141,8 @@ class Main extends React.Component {
 	render(){
 		return <div className="main_part" >{this.state.quests.map(quest=>
 			<div style={quest.display} className="one_quest">
-				<img src={quest.film.src} />
-				<img src={quest.actor.src} />
+				<div><img src={quest.film.src} /></div>
+				<div><img src={quest.actor.src} /></div>
 				<div>{quest.film.title}</div>
 				<div>{quest.actor.name}</div>
 			</div>
