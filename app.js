@@ -30,6 +30,9 @@ class Score extends React.Component {
 	up_KO(){																				// inscrease bad response score
 		this.setState({KO: this.state.KO+1 });
 	}
+	result(){
+		return {pos:this.state.OK,neg:this.state.KO} ;
+	}
 	render() {
 		return <div className="score"><div className="score_pos" > {this.state.OK} </div> <div className="score_neg" > {this.state.KO} </div></div> ;
 	}
@@ -159,7 +162,7 @@ class Resp extends React.Component {
 class PrePage extends React.Component {
 	constructor(props){
 		super(props);
-		this.state = {state:'loadding'};
+		this.state = {state:'loadding', score_pos:0 , score_neg:0};
 	}
 	ready(){
 		this.setState({state:'ready'});
@@ -168,10 +171,14 @@ class PrePage extends React.Component {
 		this.setState({state:'start'});
 		this.props.start();
 	}
+	onEnd(result){
+		this.setState({state:'onEnd' , score_pos:result.pos , score_neg:result.neg});
+	}
 	render() {
 		return <div style={this.state.state!='start'?{}:{display:'none'}} className="prepage" >
 				<h1 style={this.state.state=='loadding'?{}:{display:'none'}} >Application en chargement</h1>
 				<h1 style={this.state.state=='ready'?{}:{display:'none'}} >Prêt ? <button onClick={this.start.bind(this)} >Jouer !</button></h1>
+				<h1 style={this.state.state=='onEnd'?{}:{display:'none'}} >Score : <br/><span className="score_pos" >{this.state.score_pos}&nbsp;bonnes&nbsp;réponses</span> et <span className="score_neg" >{this.state.score_neg}&nbsp;erreures</span></h1>
 			</div> ;
 	}
 }
@@ -196,7 +203,7 @@ class App extends React.Component {
 		this.main.next_film();
 	}
 	onEnd(){
-		alert('fini!');
+		this.prepage.onEnd(this.score.result());
 	}
 	ready(){
 		this.prepage.ready();
