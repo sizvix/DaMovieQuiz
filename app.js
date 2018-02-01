@@ -59,25 +59,28 @@ class Main extends React.Component {
 			this.getActors();															// we get the list of actors from the list of films
 		});
 	}
-	selectFilms(){
+	selectFilms(lg=20){
 		let orgList = this.allFilms.slice();									// copy the list of films 
-		while(Object.keys(this.randFilms).length < 20){						// and take randomly some of them ( 20 due to tmdb request per second restriction to get credits details)
+		while(Object.keys(this.randFilms).length < lg){						// and take randomly some of them ( 20 due to tmdb request per second restriction to get credits details)
 			let film = orgList.splice( Math.floor( Math.random()*orgList.length ) , 1 )[0] ;
-			this.randFilms[film.id] = film ;										// store films by id to link actors with it easily
+			if(this.randFilms[film.id]==undefined)								// the other times of films selection, randFilms isn't empty
+				this.randFilms[film.id] = film ;									// store films by id to link actors with it easily
 		}
 	}
-	getActors(){																	// to load casting of the selected films
+	getActors(){																		// to load casting of the selected films
 		let all = [];
 		console.log('select actors');
 		for(var i in this.randFilms)
-			all.push( fetch("https://api.themoviedb.org/3/movie/"+this.randFilms[i].id+"/credits?"+api_key)
-			.then(data => data.json() )
-			.then(data => this.randFilms[data.id].cast = data.cast ) );
+			if(this.randFilms[i].cast==undefined)								// the next times, some randFilms will have cast yet
+				all.push( fetch("https://api.themoviedb.org/3/movie/"+this.randFilms[i].id+"/credits?"+api_key)
+				.then(data => data.json() )
+				.then(data => this.randFilms[data.id].cast = data.cast ) );
 		Promise.all(all).then(() => this.genQuests() );
 	}
 	genQuests(){
-		for(var i=0; i<5 ;i++)														// 5 questions and we generate others one by one
-			this.append_quest( Object.keys(this.randFilms)[i],i ); 
+		var nb_quests = this.state.quests.length ;
+		for(var i=nb_quests; i<this.curr_num+5 ;i++)							// 5 questions the first time (and we generate others one by one)
+			this.append_quest( Object.keys(this.randFilms)[i],i ); 		// the next times, we fit to curr_num+5
 		this.next_film();
 	}
 	append_quest( id_film,num ){													// we get a num to identify the questions
@@ -102,6 +105,11 @@ class Main extends React.Component {
 				, actor: {src: "https://image.tmdb.org/t/p/w300/"+ act.profile_path , name:act.name}
 			} ]});																			// and push the question in the list of questions
 	}
+	loadMore(){
+		this.selectFilms(Object.keys(this.randFilms).length+21);					// add 20 films randomly
+		this.getActors();																	// load their casting
+		// generate other questions
+	}
 	next_film(){
 		let quests = this.state.quests;
 		if(this.curr_num>-1)
@@ -110,7 +118,10 @@ class Main extends React.Component {
 		this.setState( { quests } );
 		this.curr_num++;
 
-		// we load an other question
+		if( Object.keys(this.randFilms)[this.curr_num+5]!=undefined )
+			this.append_quest( Object.keys(this.randFilms)[this.curr_num+5],this.curr_num+5 ) ;		// we load an other question
+		else
+			this.loadMore();															// when there is no other film loaded,
 	}
 	current_quest_resp(val){														// check the response
 		return this.state.quests[this.curr_num].val==val ;
