@@ -108,7 +108,7 @@ class Main extends React.Component {
 			do{																			// to be sure we don't take the same film ^^U
 				choose = this.randOrder[ Math.floor(Math.random()*this.randOrder.length) ];
 			}while(choose!=id_film);
-			act = this.filmsSelected[choose].cast[ Math.floor(Math.random()*this.filmsSelected[choose].cast.length) ];	// one of the actors of this film
+			act = this.filmsSelected[choose].cast[ Math.floor(Math.random()*this.filmsSelected[choose].cast.length%10) ];	// one of the actors of this film ( one of the 10 firsts, because unknowed actors on the end of credits haven't image
 		}
 
 		this.setState({quests:[...this.state.quests,{num , val , display:{display:'none'}
